@@ -1,7 +1,5 @@
 ---
 title: "Practical Machine Learning Course Project"
-author: "Dante D.I."
-date: "10 marzo 2016"
 output: html_document
 ---
 
