@@ -5,18 +5,168 @@ date: "10 marzo 2016"
 output: html_document
 ---
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Synopsis
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. 
+These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. 
+One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. 
+In this project, our goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. 
+They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. 
+More information is available from the website [here](http://groupware.les.inf.puc-rio.br/har) (see the section on the Weight Lifting Exercise Dataset).
 
+### Data
+
+The training data for this project are available [here](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv).
+
+The test data are available [here](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv)
+
+The data for this project come from [this source](http://groupware.les.inf.puc-rio.br/har). 
+
+### Project Goals
+
+The goal of the project is to predict the manner in which they did the exercise. 
+This is the "classe" variable in the training set. 
+We may use any of the other variables to predict with.
+We should create a report describing how we built the model, how we used cross validation, what we think the expected out of sample error is, and why we made the choices we did.
+We will also use the prediction model to predict 20 different test cases.
+
+# Libraries Loading
+
+First of all we load all the libraries that we need.
+```{r, message=FALSE}
+library(caret)
+library(ggplot2)
+```
+
+We also seet the random seed for reproducibility
 ```{r}
-summary(cars)
+set.seed(12345)
 ```
 
-You can also embed plots, for example:
+# Getting the data
 
-```{r, echo=FALSE}
-plot(cars)
+We download the data (if needed) and load them into memory.
+```{r, cache=TRUE}
+if (!file.exists("pml-training.csv")) {
+  download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv", 
+                destfile = "pml-training.csv")
+}
+if (!file.exists("pml-testing.csv")) {
+  download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv", 
+                destfile = "pml-testing.csv")
+}
+
+training <- read.csv("pml-training.csv", sep = ",", na.strings = c("", "NA"))
+testing <- read.csv("pml-testing.csv", sep = ",", na.strings = c("", "NA"))
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Exploring Data
+Let's explore the data a little.
+```{r, cache=TRUE}
+str(training)
+head(training, n = 3)
+```
+
+# Training Set Partitioning
+We divide the dataset in two set: 70% for myTraining and 30% for myTesting.
+```{r, cache=TRUE}
+inTrain <- createDataPartition(y=training$classe, p=0.7, list=FALSE)
+myTraining <- training[inTrain,] 
+myTesting <- training[-inTrain,]
+```
+
+Let's see how much data we have in each set.
+```{r, cache=TRUE}
+dim(myTraining)
+dim(myTesting)
+```
+
+# Data Cleaning
+We perform some data transormation to ease the model training phase.
+
+### Cleaning Near Zero Variance Variables
+We remove from the dataset the columns that have a very low variance.
+```{r, cache=TRUE}
+nzv <- nearZeroVar(myTraining)
+myTraining <- myTraining[, -nzv]
+myTesting <- myTesting[, -nzv]
+```
+
+### Cleaning NA Variables
+We remove from the dataset the variables that are mostly NAs.
+```{r, cache=TRUE}
+mostlyNA <- sapply(myTraining, function(x) mean(is.na(x))) > 0.95
+myTraining <- myTraining[, mostlyNA==F]
+myTesting <- myTesting[, mostlyNA==F]
+```
+
+### Remove the first five columns
+The first five columns (X, user_name, raw_timestamp_part_1, raw_timestamp_part_2, cvtd_timestamp) are intuitively not useful for prediction, so we remove them.
+```{r, cache=TRUE}
+myTraining <- myTraining[, -(1:5)]
+myTesting <- myTesting[, -(1:5)]
+```
+
+We reduced the number of prediction variables from `r dim(training)[[2]]` to `r dim(myTraining)[[2]]`.
+
+# Using ML algorithms for prediction: Random Forest
+We use [Random Forest](https://en.wikipedia.org/wiki/Random_forest) algorithm to train our model.
+We use 3-fold cross-validation to select the optimal parameters.
+
+```{r, cache=TRUE, message=FALSE, warning=FALSE}
+fitControl <- trainControl(method="cv", number=3, verboseIter=F) # 3-fold CV 
+fit <- train(classe ~ ., data=myTraining, method="rf", trControl=fitControl) # fit the model 
+```
+
+Let's print the final model and see the parameters
+```{r, cache=TRUE}
+fit$finalModel
+```
+
+# Model evaluation
+Let's see how the trained model perform over our test set.
+```{r, cache=TRUE}
+preds <- predict(fit, newdata=myTesting) # make prediction in the validation set
+confusionMatrix(myTesting$classe, preds) # show confusion matrix
+```
+
+The accuracy is very high (`r round(confusionMatrix(myTesting$classe, preds)[[3]][[1]]*100,1)`%) then we will use the "Random Forest model" to predict on the test set.
+
+# Re-training the Model
+Before that, we re-train the model using the full dataset to produce most accurate prediction.
+We repeat all the steps above.
+
+```{r, cache=TRUE}
+# Cleaning Near Zero Variance Variables
+nzv <- nearZeroVar(training)
+training <- training[, -nzv]
+testing <- testing[, -nzv]
+
+# Cleaning NA Variables
+mostlyNA <- sapply(training, function(x) mean(is.na(x))) > 0.95
+training <- training[, mostlyNA==F]
+testing <- testing[, mostlyNA==F]
+
+# Remove the first five columns
+training <- training[, -(1:5)]
+testing <- testing[, -(1:5)]
+
+# re-fit model
+fitControl <- trainControl(method="cv", number=3, verboseIter=F)
+fit <- train(classe ~ ., data=training, method="rf", trControl=fitControl)
+```
+
+# Prediction on Test Set 
+Now, we use the model to predict the label for the test set.
+```{r, cache=TRUE}
+preds <- predict(fit, newdata=testing)
+print(preds)
+```
+
+# Conclusions
+We loaded the dataset and performed a little exploration of it.
+We then divided the dataset in two sets: Training and Test set.
+We then cleaned the dataset to reduce the number of predictor variables.
+Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7%.
+Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.
