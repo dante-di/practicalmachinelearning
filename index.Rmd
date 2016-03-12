@@ -67,7 +67,7 @@ head(training, n = 3)
 ```
 
 # Training Set Partitioning
-We divide the dataset in two set: 70% for myTraining and 30% for myTesting.
+We divide the dataset in two sets: 70% for myTraining and 30% for myTesting.
 ```{r, cache=TRUE}
 inTrain <- createDataPartition(y=training$classe, p=0.7, list=FALSE)
 myTraining <- training[inTrain,] 
@@ -81,7 +81,7 @@ dim(myTesting)
 ```
 
 # Data Cleaning
-We perform some data transormation to ease the model training phase.
+We perform some data transformation to ease the model training phase.
 
 ### Cleaning Near Zero Variance Variables
 We remove from the dataset the columns that have a very low variance.
@@ -134,7 +134,7 @@ The accuracy is very high (`r round(confusionMatrix(myTesting$classe, preds)[[3]
 Given the high accuracy we will use the "Random Forest model" to predict on the test set.
 
 # Re-training the Model
-Before that, we re-train the model using the full dataset to produce most accurate prediction.
+Before that, we re-train the model using the full dataset to produce more accurate prediction.
 We repeat all the steps above.
 
 ```{r, cache=TRUE}
@@ -158,7 +158,7 @@ fit <- train(classe ~ ., data=training, method="rf", trControl=fitControl)
 ```
 
 # Prediction on Test Set 
-Now, we use the model to predict the label for the test set.
+Now, we use the model to predict the labels of the test set.
 ```{r, cache=TRUE}
 preds <- predict(fit, newdata=testing)
 print(preds)
@@ -166,7 +166,7 @@ print(preds)
 
 # Conclusions
 We loaded the dataset and performed a little exploration of it.
-We then divided the dataset in two sets: Training and Test set.
+Then we divided the dataset in two sets: Training and Test set.
 We then cleaned the dataset to reduce the number of predictor variables.
 Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%.
-Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.
+Finally we re-trained the model using the complete dataset and used it to predict the labels of the test set.

@@ -370,7 +370,7 @@ testing &lt;- read.csv(&quot;pml-testing.csv&quot;, sep = &quot;,&quot;, na.stri
 </div>
 <div id="training-set-partitioning" class="section level1">
 <h1>Training Set Partitioning</h1>
-<p>We divide the dataset in two set: 70% for myTraining and 30% for myTesting.</p>
+<p>We divide the dataset in two sets: 70% for myTraining and 30% for myTesting.</p>
 <pre class="r"><code>inTrain &lt;- createDataPartition(y=training$classe, p=0.7, list=FALSE)
 myTraining &lt;- training[inTrain,] 
 myTesting &lt;- training[-inTrain,]</code></pre>
@@ -382,7 +382,7 @@ myTesting &lt;- training[-inTrain,]</code></pre>
 </div>
 <div id="data-cleaning" class="section level1">
 <h1>Data Cleaning</h1>
-<p>We perform some data transormation to ease the model training phase.</p>
+<p>We perform some data transformation to ease the model training phase.</p>
 <div id="cleaning-near-zero-variance-variables" class="section level3">
 <h3>Cleaning Near Zero Variance Variables</h3>
 <p>We remove from the dataset the columns that have a very low variance.</p>
@@ -469,7 +469,7 @@ confusionMatrix(myTesting$classe, preds) # show confusion matrix</code></pre>
 </div>
 <div id="re-training-the-model" class="section level1">
 <h1>Re-training the Model</h1>
-<p>Before that, we re-train the model using the full dataset to produce most accurate prediction. We repeat all the steps above.</p>
+<p>Before that, we re-train the model using the full dataset to produce more accurate prediction. We repeat all the steps above.</p>
 <pre class="r"><code># Cleaning Near Zero Variance Variables
 nzv &lt;- nearZeroVar(training)
 training &lt;- training[, -nzv]
@@ -490,7 +490,7 @@ fit &lt;- train(classe ~ ., data=training, method=&quot;rf&quot;, trControl=fitC
 </div>
 <div id="prediction-on-test-set" class="section level1">
 <h1>Prediction on Test Set</h1>
-<p>Now, we use the model to predict the label for the test set.</p>
+<p>Now, we use the model to predict the labels of the test set.</p>
 <pre class="r"><code>preds &lt;- predict(fit, newdata=testing)
 print(preds)</code></pre>
 <pre><code>##  [1] B A B A A E D B A A B C B A E E A B B B
@@ -498,7 +498,7 @@ print(preds)</code></pre>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>We loaded the dataset and performed a little exploration of it. We then divided the dataset in two sets: Training and Test set. We then cleaned the dataset to reduce the number of predictor variables. Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%. Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.</p>
+<p>We loaded the dataset and performed a little exploration of it. Then we divided the dataset in two sets: Training and Test set. We then cleaned the dataset to reduce the number of predictor variables. Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%. Finally we re-trained the model using the complete dataset and used it to predict the labels of the test set.</p>
 </div>
 
 
