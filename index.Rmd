@@ -129,7 +129,9 @@ preds <- predict(fit, newdata=myTesting) # make prediction in the validation set
 confusionMatrix(myTesting$classe, preds) # show confusion matrix
 ```
 
-The accuracy is very high (`r round(confusionMatrix(myTesting$classe, preds)[[3]][[1]]*100,1)`%) then we will use the "Random Forest model" to predict on the test set.
+The accuracy is very high (`r round(confusionMatrix(myTesting$classe, preds)[[3]][[1]]*100,1)`%) and the estimated "out of sample error" (error rate you get on new data set) is 0.3%.
+
+Given the high accuracy we will use the "Random Forest model" to predict on the test set.
 
 # Re-training the Model
 Before that, we re-train the model using the full dataset to produce most accurate prediction.
@@ -166,5 +168,5 @@ print(preds)
 We loaded the dataset and performed a little exploration of it.
 We then divided the dataset in two sets: Training and Test set.
 We then cleaned the dataset to reduce the number of predictor variables.
-Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7%.
+Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%
 Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.

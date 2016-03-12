@@ -464,7 +464,8 @@ confusionMatrix(myTesting$classe, preds) # show confusion matrix</code></pre>
 ## Detection Rate         0.2845   0.1925   0.1738   0.1626   0.1832
 ## Detection Prevalence   0.2845   0.1935   0.1743   0.1638   0.1839
 ## Balanced Accuracy      0.9985   0.9980   0.9958   0.9972   0.9996</code></pre>
-<p>The accuracy is very high (99.7%) then we will use the “Random Forest model” to predict on the test set.</p>
+<p>The accuracy is very high (99.7%) and the estimated “out of sample error” (error rate you get on new data set) is 0.3%.</p>
+<p>Given the high accuracy we will use the “Random Forest model” to predict on the test set.</p>
 </div>
 <div id="re-training-the-model" class="section level1">
 <h1>Re-training the Model</h1>
@@ -497,7 +498,7 @@ print(preds)</code></pre>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>We loaded the dataset and performed a little exploration of it. We then divided the dataset in two sets: Training and Test set. We then cleaned the dataset to reduce the number of predictor variables. Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7%. Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.</p>
+<p>We loaded the dataset and performed a little exploration of it. We then divided the dataset in two sets: Training and Test set. We then cleaned the dataset to reduce the number of predictor variables. Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3% Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.</p>
 </div>
 
 
