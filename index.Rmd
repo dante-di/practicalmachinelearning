@@ -168,5 +168,5 @@ print(preds)
 We loaded the dataset and performed a little exploration of it.
 We then divided the dataset in two sets: Training and Test set.
 We then cleaned the dataset to reduce the number of predictor variables.
-Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%
+Subsequently we trained a model using the Random Forest Algorithm achieving a precision of 99.7% and an estimated out of sample error of 0.3%.
 Finally we re-trained the model using the complete dataset and used it to predict the label of the test set.
